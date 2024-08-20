@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        #quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        #question-container {
+            margin-bottom: 20px;
+        }
+        #question {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .btn {
+            margin: 5px 0;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        #controls {
+            text-align: right;
+        }
+        #next-btn {
+            background-color: #28a745;
+        }
+        .correct {
+            background-color: #28a745;
+        }
+        .wrong {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <div id="question-container">
+            <div id="question">Question text here</div>
+            <div id="answer-buttons" class="btn-container"></div>
+        </div>
+        <div id="controls">
+            <button id="next-btn" class="btn">Next</button>
+        </div>
+    </div>
+    <script>
+        const questions = [
+            {
+                question: "What is the capital of France?",
+                answers: [
+                    { text: "Paris", correct: true },
+                    { text: "London", correct: false },
+                    { text: "Berlin", correct: false },
+                    { text: "Madrid", correct: false }
+                ]
+            },
+            {
+                question: "Who is the author of 'To Kill a Mockingbird'?",
+                answers: [
+                    { text: "Harper Lee", correct: true },
+                    { text: "J.K. Rowling", correct: false },
+                    { text: "Ernest Hemingway", correct: false },
+                    { text: "F. Scott Fitzgerald", correct: false }
+                ]
+            },
+        ];
+
+        const questionElement = document.getElementById('question');
+        const answerButtonsElement = document.getElementById('answer-buttons');
+        const nextButton = document.getElementById('next-btn');
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            nextButton.classList.add('hide');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            resetState();
+            const currentQuestion = questions[currentQuestionIndex];
+            questionElement.innerText = currentQuestion.question;
+            currentQuestion.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('btn');
+                button.addEventListener('click', () => selectAnswer(button, answer.correct));
+                answerButtonsElement.appendChild(button);
+            });
+        }
+
+        function resetState() {
+            nextButton.classList.add('hide');
+            while (answerButtonsElement.firstChild) {
+                answerButtonsElement.removeChild(answerButtonsElement.firstChild);
+            }
+        }
+
+        function selectAnswer(button, correct) {
+            if (correct) {
+                button.classList.add('correct');
+                score++;
+            } else {
+                button.classList.add('wrong');
+            }
+            Array.from(answerButtonsElement.children).forEach(button => {
+                button.disabled = true;
+            });
+            nextButton.classList.remove('hide');
+        }
+
+        function showScore() {
+            resetState();
+            questionElement.innerText = `You scored ${score} out of ${questions.length}!`;
+            nextButton.innerText = 'Restart';
+            nextButton.classList.remove('hide');
+        }
+
+        nextButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showScore();
+            }
+        });
+
+        startQuiz();
+    </script>
+</body>
+</html>
